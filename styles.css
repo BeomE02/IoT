@@ -1,0 +1,142 @@
+/* 기본 스타일 */
+body {
+    margin: 0;
+    font-family: 'Roboto', Arial, sans-serif;
+    background: linear-gradient(to bottom, #4facfe, #00f2fe);
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    max-width: 400px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.hidden {
+    display: none;
+}
+
+h1, h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#studentForm {
+    display: flex;
+    flex-direction: column; /* 세로 배치 */
+    align-items: center; /* 중앙 정렬 */
+    gap: 15px; /* 요소 간 간격 */
+}
+
+/* 초기화면 스타일 */
+#studentForm input {
+    display: block;
+    margin: 15px auto;
+    padding: 10px;
+    width: 90%;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#studentForm input:focus {
+    border-color: #007BFF;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
+}
+
+#studentForm button {
+    padding: 12px 24px;
+    font-size: 16px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#studentForm button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+/* 자리 선택 화면 스타일 */
+.seats-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.seat {
+    width: 70px;
+    height: 70px;
+    text-align: center;
+    line-height: 70px;
+    border: 2px solid #007BFF;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.2);
+    background: #ffffff;
+}
+
+.seat:hover {
+    background-color: #e3f2fd;
+    transform: translateY(-4px);
+}
+
+.seat.occupied {
+    background-color: #f44336;
+    color: white;
+    cursor: not-allowed;
+    border-color: #f44336;
+    transform: none;
+    box-shadow: none;
+}
+
+.back-button {
+    margin-top: 20px;
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: #007BFF;
+    color: white;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.back-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

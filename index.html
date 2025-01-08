@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Seats 업그레이드</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <link rel="stylesheet" href="styles.css"> <!-- CSS 파일 연결 -->
+</head>
+<body>
+    <div class="container">
+        <!-- 초기화면 -->
+        <div id="studentForm">
+            <h1>도서실 자리 예약</h1>
+            <label for="studentId">학번 입력</label>
+            <input type="text" id="studentId" placeholder="학번을 입력하세요">
+            <button id="submitButton" onclick="submitStudentId()">확인</button>
+        </div>
+
+        <!-- 자리 선택 화면 -->
+        <div id="seatSelection" class="hidden">
+            <h2 class="center-text">자리 선택</h2>
+            <div id="seatsContainer" class="seats-container">
+                <!-- 자리 목록 -->
+            </div>
+            <button class="back-button" onclick="resetPage()">초기화면으로 돌아가기</button>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBRzJVr_N--c3hez5bVTgjufGQcSYkARqM",
+            authDomain: "jsha-iot.firebaseapp.com",
+            databaseURL: "https://jsha-iot-default-rtdb.firebaseio.com",
+            projectId: "jsha-iot",
+            storageBucket: "jsha-iot.appspot.com",
+            messagingSenderId: "639212697839",
+            appId: "1:639212697839:web:c48a423ece27d30267c31a",
+        };
+    
+        // Firebase 초기화
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+    
+        let currentStudentId = ""; // 현재 입력된 학번
+        const seatsContainer = document.getElementById("seatsContainer");
+    
+        // 페이지 초기화
+        function resetPage() {
+            currentStudentId = "";
+            document.getElementById("studentForm").style.display = "flex";
+            document.getElementById("seatSelection").style.display = "none";
+            seatsContainer.innerHTML = ""; // 자리 목록 초기화
+            document.getElementById("studentId").value = ""; // 입력 필드 초기화
+        }
+    
+        // 학번 입력 처리
+        function submitStudentId() {
+            const studentId = document.getElementById("studentId").value.trim();
+            if (!studentId) {
+                alert("학번을 입력하세요!");
+                return;
+            }
+    
+            currentStudentId = studentId;
+    
+            // Firebase에서 학번으로 예약된 자리 확인
+            const studentPath = `students/${studentId}`;
+            database.ref(studentPath).once("value").then((snapshot) => {
+                const reservedSeat = snapshot.val();
+    
+                if (reservedSeat) {
+                    // 예약된 자리가 있으면 취소
+                    cancelReservation(reservedSeat, studentId);
+                } else {
+                    // 예약된 자리가 없으면 예약 화면으로 이동
+                    showReservationScreen();
+                }
+            });
+        }
+    
+        // 예약 화면 표시
+        function showReservationScreen() {
+            document.getElementById("studentForm").style.display = "none";
+            document.getElementById("seatSelection").style.display = "block";
+    
+            // 자리 상태 동기화 및 렌더링
+            syncSeatsWithDatabase();
+        }
+    
+        // 자리 상태 동기화 및 렌더링
+        function syncSeatsWithDatabase() {
+            database.ref("seats").on("value", (snapshot) => {
+                const seatsData = snapshot.val() || {};
+                renderSeats(seatsData);
+            });
+        }
+    
+        // 자리 선택 처리
+        function selectSeat(seatNumber) {
+            const seatPath = `seats/${seatNumber}`;
+            const studentPath = `students/${currentStudentId}`;
+    
+            // Firebase 업데이트
+            database.ref(seatPath).set(true);
+            database.ref(studentPath).set(seatNumber);
+    
+            // 성공 메시지 및 초기화면으로 복귀
+            alert(`${seatNumber}번 자리 예약 완료!`);
+            resetPage();
+        }
+    
+        // 예약 취소 처리
+        function cancelReservation(seatNumber, studentId) {
+            const seatPath = `seats/${seatNumber}`;
+            const studentPath = `students/${studentId}`;
+    
+            // Firebase 업데이트
+            database.ref(seatPath).set(false);
+            database.ref(studentPath).remove();
+    
+            // 성공 메시지 및 초기화면으로 복귀
+            alert(`${seatNumber}번 자리 예약이 취소되었습니다.`);
+            resetPage();
+        }
+    
+        // 자리 상태 렌더링
+        function renderSeats(seatsData) {
+            seatsContainer.innerHTML = ""; // 기존 UI 초기화
+    
+            for (let i = 1; i <= 3; i++) { // 자리 수를 3개로 고정
+                const isOccupied = seatsData[i];
+                const seatDiv = document.createElement("div");
+                seatDiv.className = "seat" + (isOccupied ? " occupied" : "");
+                seatDiv.textContent = `자리 ${i}`;
+                seatDiv.onclick = () => {
+                    if (!isOccupied) {
+                        selectSeat(i);
+                    } else {
+                        alert(`${i}번 자리는 이미 예약되었습니다!`);
+                    }
+                };
+                seatsContainer.appendChild(seatDiv);
+            }
+        }
+    
+        // 초기화면에서 시작
+        resetPage();
+    </script>
+    
+</body>
+</html>
